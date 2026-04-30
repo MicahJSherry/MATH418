@@ -1,8 +1,9 @@
 import tensorflow as tf
 from tensorflow.keras import layers
+from tensorflow.keras.utils import plot_model
 import numpy as np
 import matplotlib.pyplot as plt
-
+import scipy
 # -----------------------
 # Hyperparameters
 # -----------------------
@@ -88,6 +89,11 @@ def build_discriminator():
 # -----------------------
 generator = build_generator()
 discriminator = build_discriminator()
+
+#plot_model(generator, to_file='gan_generator2.png', show_shapes=True, show_layer_names=True)
+#plot_model(discriminator, to_file='gan_discriminator2.png', show_shapes=True, show_layer_names=True)
+#exit()
+
 
 loss_fn = tf.keras.losses.BinaryCrossentropy()
 g_optimizer = tf.keras.optimizers.Adam(0.0002)

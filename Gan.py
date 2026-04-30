@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
 import os
-
+from tensorflow.keras.utils import plot_model
 # -----------------------
 # EMNIST LABEL MAP (47 classes)
 # -----------------------
@@ -39,7 +39,7 @@ def load_emnist_balanced(mat_path):
 
 # -----------------------
 # Hyperparameters
-# -----------------------
+# --------------------
 BATCH_SIZE = 128
 LATENT_DIM = 100
 NUM_CLASSES = 47
@@ -52,7 +52,7 @@ IMG_SHAPE = (28, 28, 1)
 images, labels = load_emnist_balanced("matlab/emnist-balanced.mat")
 
 dataset = tf.data.Dataset.from_tensor_slices((images, labels))
-dataset = dataset.shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+dataset = dataset.shuffle(10000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
 # -----------------------
 # Generator
@@ -114,6 +114,11 @@ def build_discriminator():
 # -----------------------
 generator = build_generator()
 discriminator = build_discriminator()
+
+#plot_model(generator, to_file='gan_generator2.png', show_shapes=True, show_layer_names=True)
+#plot_model(discriminator, to_file='gan_discriminator2.png', show_shapes=True, show_layer_names=True)
+#exit()
+
 
 # -----------------------
 # Loss + Optimizers
