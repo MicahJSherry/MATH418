@@ -53,7 +53,8 @@ IMG_SHAPE = (28, 28, 1)
 # Dataset
 # -----------------------
 images, labels = load_emnist_balanced("matlab/emnist-balanced.mat")
-
+print(images.shape)
+exit()
 dataset = tf.data.Dataset.from_tensor_slices((images, labels))
 dataset = dataset.shuffle(10000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 

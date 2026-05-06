@@ -4,3 +4,6 @@ matlab.zip
 
 __pycache__/
 models/
+
+*.aux
+*.log
