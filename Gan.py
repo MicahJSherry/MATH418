@@ -1,10 +1,13 @@
 import tensorflow as tf
 from tensorflow.keras import layers
+from tensorflow.keras.utils import plot_model
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
+
 import os
-from tensorflow.keras.utils import plot_model
+from datetime import datetime
 # -----------------------
 # EMNIST LABEL MAP (47 classes)
 # -----------------------
@@ -192,6 +195,12 @@ def generate_samples(epoch):
     plt.savefig(f"images/epoch_{epoch+1}.png")
     plt.close()
 
+
+
+# Get current date and time
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+os.makedirs(f"models/{timestamp}", exist_ok=True)
 # -----------------------
 # Training loop
 # -----------------------
@@ -204,3 +213,6 @@ for epoch in range(EPOCHS):
 
     if (epoch + 1) % 5 == 0:
         generate_samples(epoch)
+        generator.save(f"models/{timestamp}/generator_{epoch+1}.keras")
+        discriminator.save(f"models/{timestamp}/discriminator_{epoch+1}.keras")
+        
