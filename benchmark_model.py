@@ -3,6 +3,7 @@ import numpy as np
 import os
 from notebook_functions import load_generators
 import pandas as pd 
+import math
 
 import matplotlib.pyplot as plt
 # -----------------------
@@ -76,13 +77,6 @@ def benchmark_generator(generator):
 # -----------------------
 # Load generator(s)
 # -----------------------
-
-
-"""generators = load_generators("models/2026-05-01_15-21-27")
-
-# -----------------------
-# Run benchmark
-# -----------------------
 EMNIST_LABELS = [
     '0','1','2','3','4','5','6','7','8','9',
     'A','B','C','D','E','F','G','H','I','J',
@@ -90,6 +84,13 @@ EMNIST_LABELS = [
     'U','V','W','X','Y','Z',
     'a','b','d','e','f','g','h','n','q','r','t'
 ]
+
+"""generators = load_generators("models/2026-05-01_15-21-27")
+
+# -----------------------
+# Run benchmark
+# -----------------------
+
 
 
 
@@ -106,7 +107,7 @@ df = pd.DataFrame(accuracy_by_epoch,columns=["Epoch", "total_accuracy"]+EMNIST_L
 df.to_csv("generator_benchmark.csv")"""
 
 
-df = pd.read_csv("generator_benchmark.csv")
+"""
 
 epochs = df["Epoch"]
 accuracy = df["total_accuracy"]
@@ -121,4 +122,40 @@ plt.ylabel("Overall Accuracy (Classifier on Synthetic Data)")
 
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("accuracy_by_epoch.png")
+plt.savefig("accuracy_by_epoch.png")"""
+df = pd.read_csv("generator_benchmark.csv")
+
+
+EMNIST_LABELS = [
+    '0','1','2','3','4','5','6','7','8','9',
+    'A','B','C','D','E','F','G','H','I','J',
+    'K','L','M','N','O','P','Q','R','S','T',
+    'U','V','W','X','Y','Z',
+    'a','b','d','e','f','g','h','n','q','r','t'
+]
+
+epochs = df["Epoch"]
+
+num_classes = len(EMNIST_LABELS)
+cols = 8
+rows = math.ceil(num_classes / cols)
+
+plt.figure(figsize=(cols * 2.5, rows * 2))
+
+for i, label in enumerate(EMNIST_LABELS):
+    plt.subplot(rows, cols, i + 1)
+    plt.plot(epochs, df[label])
+
+    plt.title(label, fontsize=10)
+    plt.ylim(0, 1)
+    plt.grid(True, linewidth=0.3)
+
+    if i % cols == 0:
+        plt.ylabel("Acc")
+
+    if i >= num_classes - cols:
+        plt.xlabel("Epoch")
+
+plt.suptitle("Per-Class GAN Accuracy Over Epochs", fontsize=16)
+plt.tight_layout()
+plt.savefig("per_class_subplots.png")

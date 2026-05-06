@@ -1,6 +1,6 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
-
+import numpy as np 
 # general imports 
 import os
 import re
@@ -118,5 +118,103 @@ def plot_generated_samples(generator, label, num_samples=16, latent_dim=100, col
 
 generator = tf.keras.models.load_model(f"models/2026-05-01_15-21-27/generator_100.keras")
 
-for i in range(len(EMNIST_LABELS)):
-    plot_generated_samples(generator, i)
+"""for i in range(len(EMNIST_LABELS)):
+    plot_generated_samples(generator, i)"""
+
+def generate_text_image(
+    generator,
+    text,
+    latent_dim=100,
+    space_width=20,
+    max_width=280,
+    line_spacing=6
+):
+    """
+    Generates handwritten-style text with word wrapping at spaces.
+    """
+
+    def generate_char_img(ch):
+        if ch == " ":
+            return np.ones((28, space_width))
+
+        if ch not in EMNIST_LABELS:
+            ch = ch.upper()
+
+        label = EMNIST_LABELS.index(ch)
+
+        noise = tf.random.normal((1, latent_dim))
+        label_tensor = tf.constant([[label]], dtype=tf.int32)
+
+        img = generator([noise, label_tensor], training=False)
+        img = (img + 1) / 2.0
+
+        return img[0, :, :, 0].numpy()
+
+    words = text.split(" ")
+
+    lines = []
+    current_line = []
+    current_width = 0
+
+    for word in words:
+        word_imgs = []
+        word_width = 0
+
+        # build word image first
+        for ch in word:
+            img = generate_char_img(ch)
+            if img is None:
+                continue
+            word_imgs.append(img)
+            word_width += img.shape[1]
+
+        # add space after word (except last word)
+        space = np.ones((28, space_width))
+        word_width += space_width
+
+        # check if word fits on current line
+        if current_width + word_width > max_width and current_line:
+            lines.append(np.concatenate(current_line, axis=1))
+            current_line = []
+            current_width = 0
+
+        # append word + space
+        for img in word_imgs:
+            current_line.append(img)
+        current_line.append(space)
+
+        current_width += word_width
+
+    # add last line
+    if current_line:
+        lines.append(np.concatenate(current_line, axis=1))
+
+    # stack lines vertically
+    total_height = len(lines) * 28 + (len(lines) - 1) * line_spacing
+    max_line_width = max(line.shape[1] for line in lines)
+
+    canvas = np.ones((total_height, max_line_width))
+
+    y = 0
+    for line in lines:
+        h, w = line.shape
+        canvas[y:y+28, 0:w] = line
+        y += 28 + line_spacing
+
+    return canvas
+
+def plot_text(generator, text):
+    img = generate_text_image(generator, text)
+
+    plt.figure(figsize=(6, 3))
+    plt.imshow(img, cmap="gray")
+    plt.axis("off")
+
+    os.makedirs("images/text", exist_ok=True)
+    plt.savefig(f"images/text/{text.replace(' ', '_')}.png")
+    plt.close()
+
+plot_text(generator, "Hello world")
+plot_text(generator, "0123456789")
+
+plot_text(generator, "It is not enough to have a good mind the main thing is to use it well    Rene Descartes")

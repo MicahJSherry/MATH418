@@ -13,6 +13,8 @@
 \usepackage{apacite}
 \usepackage{xcolor}
 
+\usepackage{caption}
+
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning}
 
@@ -40,7 +42,7 @@
     \addtocounter{enumi}{-1}
     \item
 }
-\usepackage{multicol}
+
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}{Lemma}[section]
 \title{Math 418\\ \large Synthetic Handwriting with Generative Adversarial Networks}
@@ -52,6 +54,13 @@
 \begin{document}
 
 \maketitle
+\begin{abstract}
+    This project investigates the use of conditional Generative Adversarial Networks (cGANs) for generating synthetic handwritten characters using the EMNIST Balanced dataset. Two architectures were explored: a baseline GAN composed of fully connected layers and a convolutional GAN designed to better capture spatial features in image data. The results show that the non-convolutional model fails to produce meaningful outputs, while the convolutional model successfully generates realistic and diverse handwritten characters across 47 classes.
+    
+    To quantitatively evaluate generator performance, a separate classification model was trained on real EMNIST data and used to assess the quality of synthetic samples. Classification accuracy on generated data improved consistently over training epochs, providing a measurable indication of learning progress. Additional analysis examined class-wise performance and the effect of varying the input noise vector on output diversity.
+    
+    Overall, the findings demonstrate that convolutional architectures are essential for high-quality image generation in GANs and that classifier-based evaluation provides a useful framework for benchmarking generative models.
+\end{abstract}
 
 \section{Introduction}
 
@@ -180,15 +189,129 @@ As expected the model with convolutional layers performed very well (compared to
 Determining how well the model performs is difficult because of the subjectivity of Determining images looks better. 
 
 \subsection{Classification Model}
-To get a Numerical Score of how well a model performed a classification model was trained on the EMNIST Balanced dataset. Then the generator was used to create a synthetic dataset. the Synthetic dataset was then scored on classification accuracy. Figure~\ref{fig:class} shows classification accuracy of the synthetic dataset by epoch
+To get a Numerical Score of how well a model performed a classification model was trained on the EMNIST Balanced dataset. Then the generator was used to create a synthetic dataset. the Synthetic dataset was then scored on classification accuracy. Figure~\ref{fig:classification} shows classification accuracy of the synthetic dataset by epoch.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/accuracy_by_epoch.png}
     \caption{classification accuracy by epoch}
-    \label{fig:class}
+    \label{fig:classification}
+\end{figure}
+
+We also want to look at the accuracy of each of the classes over the epochs. Which is shown in  figure~\ref{fig:classification_by_class} as you can see the classes  with the lowest accuracy tend to be similar to another class for  example 0 and O or 9 and q and g.   
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{images/per_class_subplots.png}
+    \caption{class classification accuracy by epoch}
+    \label{fig:classification_by_class}
+\end{figure}
+
+\subsection{Progression Over Epochs}
+Next we look at the progression of the synthetic images over the epochs. The figures included are some of the more interesting progressions. To generate the images the same random noise vector was used to control for random variation.
+
+\begin{center}
+    \begin{multicols}{2}
+    
+    \includegraphics[width=\linewidth]{images/progress/label_8_progression.png}
+    \captionof{figure}{Progress synthetic generated '8's}
+    \label{fig:progress8}
+    
+    \includegraphics[width=\linewidth]{images/progress/label_K_progression.png}
+    \captionof{figure}{Progress synthetic generated 'K's}
+    \label{fig:progressK}
+    
+    \includegraphics[width=\linewidth]{images/progress/label_a_progression.png}
+    \captionof{figure}{Progress synthetic generated 'a's}
+    \label{fig:progressa}
+    
+    \includegraphics[width=\linewidth]{images/progress/label_A_progression.png}
+    \captionof{figure}{Progress synthetic generated 'A's}
+    \label{fig:progressA}
+
+    \includegraphics[width=\linewidth]{images/progress/label_B_progression.png}
+    \captionof{figure}{Progress synthetic generated 'B's}
+    \label{fig:progressa}
+    
+    \includegraphics[width=\linewidth]{images/progress/label_7_progression.png}
+    \captionof{figure}{Progress synthetic generated '7's}
+    \label{fig:progressA}
+
+    
+    \end{multicols}
+\end{center}
+
+\subsection{Variation of Noise}
+Next to get a sense of how the generated images vary we generate synthetic from a specific epoch and vary the random noise vector to see how things change. The following figures are some of the more interesting ones.  
+\pagebreak
+\begin{center}
+    \begin{multicols}{2}
+    
+    \includegraphics[width=\linewidth]{images/noise/noise_2.png}
+    \captionof{figure}{Varying Noise for '2'}
+    
+    \includegraphics[width=\linewidth]{images/noise/noise_4.png}
+    \captionof{figure}{Varying Noise for'4'}
+    
+    \includegraphics[width=\linewidth]{images/noise/noise_g.png}
+    \captionof{figure}{Varying Noise for'g'}
+    
+    \includegraphics[width=\linewidth]{images/noise/noise_r.png}
+    \captionof{figure}{Varying Noise for 'r'}
+    
+    \includegraphics[width=\linewidth]{images/noise/noise_U.png}
+    \captionof{figure}{Varying Noise for'U'}
+    
+    \includegraphics[width=\linewidth]{images/noise/noise_Z.png}
+    \captionof{figure}{Varying Noise for 'Z'}
+    
+    \end{multicols}
+    \end{center}
+
+
+
+\section{Applications}
+There are many potential applications of this research. For this research project I implemented synthetic handwritten qoute generations. For this application to work well the synthetic image quality needs to be improved as a proof of concept the following quotes(or strings of characters) were synthetically generated.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/text/Hello_world.png}
+    \caption{Generated handwritten text: "Hello world"}
+    \label{fig:hello_world}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/text/0123456789.png}
+    \caption{Generated handwritten digits sequence "0123456789"}
+    \label{fig:digits_sequence}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/text/It_is_not_enough_to_have_a_good_mind_the_main_thing_is_to_use_it_well____Rene_Descartes.png}
+    \caption{Generated handwritten quote: "It is not enough to have a good mind the main thing is to use it well — René Descartes"}
+    \label{fig:descartes_quote}
 \end{figure}
 
 
+\section{Further Study}
+There is many possible questions for further study some of which are:
+\begin{enumerate}
+    \item Can the model be modified to emulate a single author's handwritting style? 
+    \item What preprocessing methods could be applied to improve the results?
+    \item Could the noise vector be used to control for letter style?
+    \item Can the distinction between similar symbols be improved?
+    \item Comparison with conditional Gan individual GANs being trained on each symbol.   
+    
+\end{enumerate} 
+
+\section{Conclusion}
+
+In this project, a conditional Generative Adversarial Network (cGAN) was used to generate synthetic handwritten characters from the EMNIST dataset. The results demonstrate that model architecture plays a critical role in performance, as the GAN without convolutional layers failed to capture meaningful structure in the data, while the convolutional GAN produced realistic and diverse handwritten characters. 
+
+Quantitative evaluation using a trained classifier provided a useful metric for assessing generator performance, showing clear improvement over training epochs. Additionally, qualitative analysis of generated samples revealed that the model was able to learn class-specific features, though some confusion remained between visually similar characters.
+
+Overall, this work highlights the effectiveness of convolutional GANs for image generation tasks and demonstrates a practical approach for evaluating generative models using downstream classification performance. Future work could explore more advanced architectures, improved training stability techniques, or higher-resolution datasets to further enhance generation quality.
 
 \end{document}
